@@ -10,22 +10,21 @@
 abstract class CometBaseAction extends XBaseAction {
 
     private $tickPerSecond = 10;
-    private $run = true;
+    private $running = true;
 
     final public function execute() {
-        $count = 0;
-        while ($this->run) {
-            $this->tick($count++);
-            if (!$this->run) {
+        while ($this->running) {
+            $this->tick();
+            if (!$this->running) {
                 break;
             }
             usleep($this->tickCycle());
         }
+        $this->output();
     }
 
     final protected function flush() {
-        $this->run = false;
-        $this->output();
+        $this->running = false;
     }
 
     protected function setTickPerSecond($tickPerSecond) {
@@ -33,15 +32,11 @@ abstract class CometBaseAction extends XBaseAction {
         $this->tickPerSecond = $tickPerSecond;
     }
 
-    protected function tickPerSecond() {
-        return $this->tickPerSecond;
-    }
-
     protected function tickCycle() {
         return 1000000 / $this->tickPerSecond;
     }
 
-    abstract protected function tick($count);
+    abstract protected function tick();
 
     abstract protected function output();
 }
